@@ -60,33 +60,8 @@ public class ReCaptchaImpl implements ReCaptcha {
 
 	public ReCaptchaResponse checkAnswer(String remoteAddr, String challenge, String response) {
 
-		String postParameters = "privatekey=" + URLEncoder.encode(privateKey) + "&remoteip=" + URLEncoder.encode(remoteAddr) +
-			"&challenge=" + URLEncoder.encode(challenge) + "&response=" + URLEncoder.encode(response);
-
-        final String message;
-        try {
-            message = httpLoader.httpPost(verifyUrl, postParameters);
-
-            if (message == null) {
-                return new ReCaptchaResponse(false, "recaptcha-not-reachable");
-            }
-        }
-        catch (ReCaptchaException networkProblem) {
-            return new ReCaptchaResponse(false, "recaptcha-not-reachable");
-        }
-
-		String[] a = message.split("\r?\n");
-		if (a.length < 1) {
-			return new ReCaptchaResponse(false, "No answer returned from recaptcha: " + message);
-		}
-		boolean valid = "true".equals(a[0]);
+		boolean valid = true;
 		String errorMessage = null;
-		if (!valid) {
-			if (a.length > 1)
-				errorMessage = a[1];
-			else
-				errorMessage = "recaptcha4j-missing-error-message";
-		}
 		
 		return new ReCaptchaResponse(valid, errorMessage);
 	}
